@@ -25,8 +25,8 @@ WHERE hire_date LIKE '199%' AND birth_date LIKE '%12-25'
 ORDER BY hire_date
 LIMIT 5;
 
--- 4. Zvonko Nyanchama, Florian Syrotiuk, Basil Tramer, Yinghua Dredge, Hidefumi Caine
--- the relationship is that they are friends 
+-- 4. Lucien Rosenbaum, Zvonko Nyanchama, Florian Syrotiuk, Basil Tramer, Yinghua Dredge
+-- offset = (page number - 1) * limit 
 SELECT *
 FROM employees
-LIMIT 5 OFFSET 46;
+LIMIT 5 OFFSET 45;
