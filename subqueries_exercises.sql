@@ -40,9 +40,12 @@ AND gender LIKE '%f%';
 -- 1. 
 SELECT *
 FROM employees
+JOIN. salaries AS s
+	ON s.emp_no = employees.emp_no
 WHERE hire_date IN(
 SELECT hire_date FROM employees
-WHERE emp_no = '101010');
+WHERE emp_no = '101010')
+AND to_date > CURDATE();
 
 -- 2.
 SELECT *
@@ -53,13 +56,33 @@ FROM employees
 WHERE first_name = 'Aamod')
 AND to_date > NOW();
 
--- 3. 85,108 employees are no longer working for the company 
+SELECT
+      t.title AS 'Titles Held by Aamods',
+      COUNT(t.title) AS 'Total Aamods Who Held Title'
+FROM titles AS t
+WHERE
+      t.emp_no IN
+      (
+            SELECT
+                  e.emp_no
+            FROM employees AS e
+            JOIN salaries AS s
+                  ON e.emp_no = s.emp_no
+                        AND s.to_date > CURDATE()
+            WHERE
+                first_name LIKE 'Aamod'
+      )
+GROUP BY
+      t.title
+;
+
+-- 3. 59,900 employees are no longer working for the company 
 SELECT *
 FROM employees
-WHERE emp_no IN(
+WHERE emp_no NOT IN(
 SELECT emp_no
 FROM dept_emp
-WHERE to_date NOT LIKE '%9999-01-01%');
+WHERE to_date = '9999-01-01');
 
 -- 4. Isamu Legleitner, Karsten Sigstam, Leon DasSarma, Hilary Kambil
 SELECT first_name, last_name FROM employees
@@ -79,7 +102,7 @@ AND salary > (
 SELECT AVG(salary)
 FROM salaries);
 
--- 6. 78 salaries or .032%
+-- 6. 83 salaries or .035%
 SELECT *
 FROM employees AS e
 JOIN salaries AS s
@@ -88,7 +111,8 @@ WHERE to_date > NOW()
 AND salary > 141315.17; 
 
 SELECT STD(salary)
-FROM salaries;
+FROM salaries
+WHERE to_date > curdate();
 
 SELECT AVG(salary)
 FROM salaries;
@@ -96,6 +120,17 @@ FROM salaries;
 SELECT *
 FROM salaries
 WHERE to_date > NOW();
+
+SELECT
+	COUNT(salary)
+FROM salaries
+WHERE to_date > CURDATE()
+	AND salary >= (
+		SELECT
+		MAX(salary) - STDDEV(salary)
+		FROM salaries
+		WHERE to_date > CURDATE()
+		);
 
 -- BONUS
 -- 1.
