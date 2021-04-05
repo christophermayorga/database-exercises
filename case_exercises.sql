@@ -1,8 +1,22 @@
 USE employees;
 
 -- 1.
-SELECT emp_no, dept_no, from_date, to_date, IF(to_date > curdate(), 1, 0) AS is_current_employee
-FROM dept_emp;
+SELECT dept_emp.emp_no, dept_no, from_date, to_date, IF(to_date > curdate(), 1, 0) AS is_current_employee
+FROM dept_emp
+	JOIN (SELECT emp_no, max(to_date) AS max_date
+	FROM dept_emp
+	GROUP BY emp_no) AS current_dept
+	ON dept_emp.emp_no = current_dept.emp_no
+	AND dept_emp.to_date = current_dept.max_date;
+	
+SELECT IF(to_date > curdate(), 1, 0) AS is_current_employee, count(*)
+FROM dept_emp
+	JOIN (SELECT emp_no, max(to_date) AS max_date
+	FROM dept_emp
+	GROUP BY emp_no) AS current_dept
+	ON dept_emp.emp_no = current_dept.emp_no
+	AND dept_emp.to_date = current_dept.max_date
+GROUP BY is_current_employee;
 
 -- 2.
 SELECT first_name, last_name,
